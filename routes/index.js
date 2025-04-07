@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const Todo = require('../models/todo'); // Import the Todo model
+const todoService = require('../services/todoService'); // Import the service
 
-/* GET home page. */
+/* GET home page - Uses Service */
 router.get('/', async function(req, res, next) {
   try {
-    const todos = await Todo.find().sort({ createdAt: -1 }); // Find all todos, sort by creation date
+    const todos = await todoService.getAllTodos(); // Use the service function
     res.render('index', { title: 'My To-Do List', todos: todos });
   } catch (err) {
+    console.error("Error fetching todos:", err); // Log the specific error
     next(err); // Pass errors to the error handler
   }
 });
@@ -17,66 +18,73 @@ router.get('/about', function(req, res, next) {
   res.render('about', { title: 'About My To-Do List' });
 });
 
-/* POST Create a new to-do item. */
+/* POST Create a new to-do item - Uses Service */
 router.post('/create', async function(req, res, next) {
   try {
-    const newTodo = new Todo({
+    // Pass the relevant data from req.body to the service
+    await todoService.createTodo({
       item: req.body.item,
       description: req.body.description,
     });
-    await newTodo.save();
     res.redirect('/'); // Redirect back to the home page
   } catch (err) {
+    console.error("Error creating todo:", err);
+    // Optionally render the form again with an error message
+    // For now, just pass the error
     next(err);
   }
 });
 
-/* GET form to edit an item */
-router.get('/edit/:id', async function(req, res, next){
+/* GET form to edit an item - Uses Service */
+router.get('/edit/:id', async function(req, res, next) {
   try {
-    const todo = await Todo.findById(req.params.id);
-        if(!todo){
-            return res.status(404).send('To-do item not found');
-        }
-    res.render('edit', {title: "Edit To-Do", todo: todo})
-  } catch (error) {
-    next(error);
+    const todo = await todoService.getTodoById(req.params.id); // Use the service
+    if (!todo) {
+      const err = new Error('To-do item not found');
+      err.status = 404;
+      return next(err); // Go to error handler if not found
+    }
+    res.render('edit', { title: "Edit To-Do", todo: todo });
+  } catch (err) {
+    console.error("Error getting todo for edit:", err);
+    next(err);
   }
 });
 
-/* POST Update a to-do item. */
+/* POST Update a to-do item - Uses Service */
 router.post('/update/:id', async function(req, res, next) {
   try {
-    const updatedTodo = await Todo.findByIdAndUpdate(
-      req.params.id,
-      {
-        item: req.body.item,
-        description: req.body.description,
-      },
-      { new: true } // Return the updated document
-    );
-     if (!updatedTodo) {
-            return res.status(404).send('To-do item not found.');
-        }
+    const updatedTodo = await todoService.updateTodo(req.params.id, { // Use the service
+      item: req.body.item,
+      description: req.body.description,
+    });
+    if (!updatedTodo) {
+       const err = new Error('To-do item not found for update');
+       err.status = 404;
+       return next(err);
+    }
     res.redirect('/');
   } catch (err) {
+    console.error("Error updating todo:", err);
+     // Handle validation errors specifically if needed, e.g., render edit form again
     next(err);
   }
 });
 
-/* GET Delete a to-do item. */
-// Using GET for delete is simpler for a basic example, but in a production app,
-// you should ideally use a form with method="POST" and the POST verb for deletion,
-// possibly with method-override middleware to use DELETE.
-
+/* GET Delete a to-do item - Uses Service */
+// Note: While the API won't use GET for delete, the HTML interface might still
+// If you want the HTML interface to also use POST/DELETE, you'd need method-override
 router.get('/delete/:id', async function(req, res, next) {
   try {
-    const deletedTodo = await Todo.findByIdAndDelete(req.params.id);
-      if (!deletedTodo) {
-            return res.status(404).send('To-do item not found.'); // Or handle differently
-        }
+    const deletedTodo = await todoService.deleteTodo(req.params.id); // Use the service
+    if (!deletedTodo) {
+       const err = new Error('To-do item not found for delete');
+       err.status = 404;
+       return next(err);
+    }
     res.redirect('/');
   } catch (err) {
+    console.error("Error deleting todo:", err);
     next(err);
   }
 });

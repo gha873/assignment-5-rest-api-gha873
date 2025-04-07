@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/gha873/assignment-4-express-routing-mongodb-and-mongoose-new-gha873#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.12.1",

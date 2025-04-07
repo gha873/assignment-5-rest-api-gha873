@@ -1,14 +1,30 @@
 const express = require('express');
 const path = require('path');
-const mongoose = require('mongoose');
 require('dotenv').config();
+const mongoose = require('mongoose');
+const cors = require('cors'); // Import cors
+
+const indexRouter = require('./routes/index');
+const apiRouter = require('./routes/api'); // Import the new API router
+
 const app = express();
 
-// ... other imports ...
+// --- Middleware Setup ---
 
+// Enable All CORS Requests (for development/testing)
+// For production, you might want to configure specific origins
+app.use(cors());
 
+// Middleware to parse JSON bodies (needed for POST, PUT, PATCH requests)
+app.use(express.json());
 
-// MongoDB Connection
+// Middleware for parsing URL-encoded data (still needed for HTML forms)
+app.use(express.urlencoded({ extended: false }));
+
+// Middleware to serve static files (CSS, client-side JS)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// --- Database Connection ---
 const mongoDB = process.env.MONGODB_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
@@ -17,35 +33,49 @@ db.once('open', function() {
   console.log("Connected to MongoDB successfully!");
 });
 
-// Set up Pug as the view engine
+// --- Routes ---
+app.use('/', indexRouter);         // Mount the HTML routes at the root
+app.use('/api', apiRouter);       // Mount the API routes under the /api path
+
+// --- View Engine Setup --- (Can stay here or move above routes)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Middleware for parsing URL-encoded data (for form submissions)
-app.use(express.urlencoded({ extended: false }));
 
-// Import routes
-const indexRouter = require('./routes/index');
-// const otherRouter = require('./routes/other'); // Example for another route file
+// --- Error Handling ---
 
-// Use routes
-app.use('/', indexRouter);
-// app.use('/other', otherRouter);  // Example for another route
-
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler (This should come AFTER routes)
 app.use(function(req, res, next) {
-  next(createError(404));
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
-// error handler
+// Central Error Handler (MUST have 4 arguments)
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  // Determine status code
+  const status = err.status || 500;
+  res.status(status);
+
+  // Respond differently for API requests vs HTML requests
+  if (req.originalUrl.startsWith('/api/')) {
+    // API request error
+    res.json({
+      error: {
+        message: err.message || 'Internal Server Error',
+        status: status
+        // Optionally include stack trace in development
+        // stack: req.app.get('env') === 'development' ? err.stack : undefined
+      }
+    });
+  } else {
+    // HTML request error - render the error page
+    res.render('error');
+  }
 });
-module.exports = app;
+
+module.exports = app; // Export the app for use in server.js or other modules
