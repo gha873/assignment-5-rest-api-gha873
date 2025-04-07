@@ -1,17 +1,20 @@
-# Assignment #4 - Express, MongoDB, and Mongoose: To-Do List
+# Assignment #5 - REST APIs: To-Do List
 
-This repository contains my solution for **Assignment #4** in the [CSCI E-33a](https://canvas.harvard.edu/courses/150064) course (Spring 2024). This project builds upon the foundation laid in Assignment #3, integrating a **MongoDB** database using **Mongoose** to provide persistent storage and full **CRUD** (Create, Read, Update, Delete) functionality for a simple To-Do List application.
+This repository contains my solution for **Assignment #5** in the [CSCI E-33a](https://canvas.harvard.edu/courses/150064) course (Spring 2024). This assignment significantly enhances the To-Do List application built in Assignment #4 by adding a **RESTful API** layer alongside the existing server-rendered HTML interface. The API allows programmatic access to manage To-Do items using standard HTTP methods and JSON data format, while the database logic has been centralized into a reusable service layer.
 
-## Project Overview: A Full-Stack To-Do App
+## Project Overview: Full-Stack To-Do App with API
 
-The core goal was to transform the basic Express application from the previous assignment into a more functional, database-driven web app. Users can now:
+Building on the previous assignment's foundation, this project now offers two ways to interact with the To-Do list data stored in MongoDB Atlas:
 
-*   View a dynamic list of their to-do items, fetched directly from a MongoDB Atlas database.
-*   Add new to-do items (with an item title and an optional description) using an HTML form. The form now uses the `POST` method for creating resources.
-*   Edit the details of existing to-do items.
-*   Delete items they no longer need.
-*   Navigate between the main To-Do list page and a simple "About" page.
-*   See a slightly enhanced visual design for better usability.
+1.  **Server-Rendered HTML Interface:** (Carried over from Assignment #4)
+    *   Users can view, add, edit, and delete to-do items through dynamically generated web pages using Express and Pug.
+    *   Interactions involve standard HTML form submissions and link navigation, resulting in full page reloads.
+2.  **RESTful API Interface:** (New for Assignment #5)
+    *   Provides endpoints (`/api/todos/...`) for programmatic CRUD operations.
+    *   Uses standard HTTP verbs (`GET`, `POST`, `PUT`, `DELETE`) according to REST principles.
+    *   Accepts JSON data in request bodies (for creating/updating).
+    *   Returns JSON data in responses.
+    *   Includes CORS support to allow access from web browsers (like the provided test client).
 
 ## Running the Application Locally
 
@@ -19,8 +22,9 @@ To run this project on your local machine:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/gha873/assignment-4-express-routing-mongodb-and-mongoose-new-gha873
-    cd assignment-4-express-routing-mongodb-and-mongoose-new-gha873
+    # Replace with your Assignment 5 repository URL
+    git clone https://github.com/gha873/assignment-5-rest-api-gha873
+    cd assignment-5-rest-api-gha873
     ```
 2.  **Install dependencies:**
     ```bash
@@ -37,75 +41,111 @@ To run this project on your local machine:
     ```bash
     npm run dev
     ```
-5.  Open your browser and navigate to `http://localhost:3000` (or the port specified if different).
+5.  Open your browser:
+    *   HTML Interface: `http://localhost:3000/`
+    *   API Test Client: `http://localhost:3000/test-api.html`
 
 ## Technologies Used
 
 *   **Backend:** Node.js, Express.js
 *   **Database:** MongoDB (using the cloud-hosted Atlas service)
-*   **ODM (Object Data Modeling):** Mongoose (for interacting with MongoDB)
-*   **Templating:** Pug
+*   **ODM (Object Data Modeling):** Mongoose
+*   **Templating:** Pug (for HTML interface)
 *   **Styling:** CSS
-*   **Development:** Nodemon (for auto-restarting the server)
-*   **Environment Variables:** dotenv (for local development)
+*   **API:** REST principles, JSON
+*   **Middleware:** `cors` (for Cross-Origin Resource Sharing), `express.json` (for parsing JSON bodies)
+*   **Development:** Nodemon
+*   **Environment Variables:** dotenv
 *   **Version Control:** Git / GitHub
 *   **Deployment:** CapRover
 
-## Key Functionality Implemented (CRUD)
+## Key Functionality (HTML & API)
 
-*   **Create:** New to-do items are added via a POST request from the main form and saved to the database using `new Todo(...).save()`.
-*   **Read:** The main page (`GET /`) fetches all to-do items from the database using `Todo.find()` and displays them, sorted by creation date. A specific item is fetched for editing using `Todo.findById()` (`GET /edit/:id`).
-*   **Update:** Existing items are modified via a POST request (`POST /update/:id`) using `Todo.findByIdAndUpdate()`.
-*   **Delete:** Items are removed via a GET request (`GET /delete/:id`) using `Todo.findByIdAndDelete()`. (Note: Using POST/DELETE verbs would be more conventional in a RESTful API, but GET was sufficient for this assignment's scope).
+*   **HTML Interface (Server-Rendered):**
+    *   Provides a user-friendly web interface for managing To-Dos using forms and links.
+    *   Uses server-side rendering with Pug templates.
+*   **REST API (`/api/todos`):**
+    *   **Create (`POST /api/todos`):** Adds a new item via JSON request body. Returns `201 Created` with the new item.
+    *   **Read (`GET /api/todos`):** Retrieves all items as a JSON array. Returns `200 OK`.
+    *   **Read (`GET /api/todos/:id`):** Retrieves a single item by ID as a JSON object. Returns `200 OK` or `404 Not Found`.
+    *   **Update (`PUT /api/todos/:id`):** Updates an item via JSON request body. Returns `200 OK` with the updated item or `404 Not Found`. **Does not use GET.**
+    *   **Delete (`DELETE /api/todos/:id`):** Removes an item by ID. Returns `204 No Content` on success or `404 Not Found`. **Does not use GET.**
 
-## Development Journey & Key Steps
+## Development Journey & Key Steps (Assignment #5 Focus)
 
-Building upon Assignment #3, the major steps for this assignment involved:
+Building upon the working CRUD application from Assignment #4, the key steps for this assignment were:
 
-1.  **Project Setup:** Cloned the new Assignment #4 repository and copied relevant code (structure, views, routes, `app.js`, `package.json`) from the previous assignment.
-2.  **Dependency Installation:** Ran `npm install` to get existing dependencies and added `mongoose` and `dotenv`.
-3.  **MongoDB Atlas Setup:**
-    *   Created a free-tier cluster on MongoDB Atlas.
-    *   Set up a database user with read/write permissions.
-    *   Obtained the connection string (`MONGODB_URI`).
-    *   **Crucially:** Whitelisted my local development IP address and *later* the IP address of the CapRover VPS for database access.
-4.  **Mongoose Integration:**
-    *   Created the `models/` directory.
-    *   Defined a Mongoose schema and model (`models/todo.js`) for the `Todo` items, specifying field types (`String`), requirements (`required: true`), and enabling timestamps (`timestamps: true`).
-    *   Added the Mongoose connection logic to `app.js`, ensuring error handling.
-5.  **Environment Variable Management:**
-    *   Implemented `dotenv` to load the `MONGODB_URI` from a local `.env` file (keeping credentials out of the codebase).
-    *   Ensured `.env` was added to `.gitignore`.
-    *   Configured the `MONGODB_URI` as an environment variable within the CapRover app settings for deployment.
-6.  **CRUD Route Implementation:**
-    *   Refactored the `routes/index.js` file significantly.
-    *   Converted route handlers to use `async/await` for cleaner asynchronous database operations.
-    *   Implemented logic for creating, reading (listing all and fetching one for edit), updating, and deleting To-Do items using appropriate Mongoose methods.
-    *   Added basic error handling using `try...catch` blocks within the routes.
-    *   Used `res.redirect('/')` after create, update, and delete operations to refresh the list.
-7.  **Template Updates:**
-    *   Modified `views/index.pug`:
-        *   Changed the form method to `POST` and action to `/create`.
-        *   Iterated through the `todos` array passed from the route.
-        *   Added "Edit" and "Delete" links next to each item, dynamically including the `_id`.
-    *   Created `views/edit.pug`:
-        *   Built a form pre-populated with the item's data.
-        *   Set the form action to `/update/:id` using `POST`.
-        *   Included a "Cancel" link back to the homepage.
-8.  **Styling Enhancements:** Overhauled `public/stylesheets/style.css` to provide a cleaner, more modern look using a container, better spacing, improved form styles, and enhanced list item presentation with flexbox.
-9.  **Deployment Preparation (CapRover):**
-    *   Created a `captain-definition` file.
-    *   **Debugging:** Encountered a deployment error due to an outdated Node.js version in the default CapRover environment. Resolved this by explicitly specifying a modern Node.js version (e.g., `node/18`) in the `captain-definition` file's `templateId`.
-    *   Successfully deployed the application to CapRover.
+1.  **Project Setup:** Cloned the new Assignment #5 repository, copied relevant code from Assignment #4.
+2.  **Dependency Installation:** Installed existing dependencies via `npm install` and added `cors`.
+3.  **Service Layer Creation:**
+    *   Created the `services/` directory and `services/todoService.js`.
+    *   **Refactored:** Moved all Mongoose database interaction logic (`Todo.find`, `Todo.findById`, `Todo.save`, `Todo.findByIdAndUpdate`, `Todo.findByIdAndDelete`) from `routes/index.js` into exported functions within `todoService.js`.
+    *   Updated `routes/index.js` (HTML routes) to import and *use* the `todoService` functions, removing direct Mongoose calls.
+4.  **REST API Implementation:**
+    *   Created the API router file `routes/api.js`.
+    *   Defined routes for all CRUD operations under the `/todos` path prefix.
+    *   Implemented route handlers using `async/await` and calling the appropriate `todoService` functions.
+    *   Ensured API routes use correct HTTP verbs (`GET`, `POST`, `PUT`, `DELETE`).
+    *   Formatted API responses as JSON using `res.json()` and set appropriate HTTP status codes (200, 201, 204, 400, 404).
+    *   Added basic request body validation and specific error handling (e.g., for `CastError`).
+5.  **Middleware Configuration (`app.js`):**
+    *   Added `cors()` middleware to enable cross-origin requests.
+    *   Added `express.json()` middleware to parse incoming JSON request bodies for the API.
+    *   Mounted the new `apiRouter` under the `/api` path prefix (`app.use('/api', apiRouter)`).
+    *   Enhanced the central error handler to return JSON errors for requests under `/api/`.
+6.  **Client-Side API Test Page:**
+    *   Created `public/test-api.html` to act as an interactive API client.
+    *   Used HTML to structure sections for each API endpoint, including input fields for parameters/bodies.
+    *   Wrote vanilla JavaScript using the `fetch` API to make requests to each endpoint.
+    *   Implemented logic to display the HTTP status and JSON response body (or errors) from the API calls. Added basic JSON validation for request bodies input by the user.
+7.  **Environment Variables:** Continued using `dotenv` locally and configured the `MONGODB_URI` in CapRover's environment variables for secure deployment.
+8.  **Deployment:** Deployed the updated application to CapRover, ensuring the Node.js version was correctly specified in `captain-definition` and the server IP was whitelisted in MongoDB Atlas.
+
+## REST API Endpoints
+
+The following RESTful endpoints are available for managing To-Do items:
+
+*   **`GET /api/todos`**
+    *   Description: Retrieves a list of all To-Do items, sorted by creation date (newest first).
+    *   Success Response: `200 OK` with JSON array of To-Do objects.
+*   **`POST /api/todos`**
+    *   Description: Creates a new To-Do item.
+    *   Request Body (JSON): `{ "item": "Required title", "description": "Optional details" }`
+    *   Success Response: `201 Created` with the newly created To-Do object.
+    *   Error Responses: `400 Bad Request` (missing item, invalid JSON), `500 Internal Server Error`.
+*   **`GET /api/todos/:id`**
+    *   Description: Retrieves a single To-Do item by its ID.
+    *   Success Response: `200 OK` with the requested To-Do object.
+    *   Error Responses: `400 Bad Request` (invalid ID format), `404 Not Found`.
+*   **`PUT /api/todos/:id`**
+    *   Description: Updates an existing To-Do item by its ID.
+    *   Request Body (JSON): `{ "item": "Updated title", "description": "Updated details" }`
+    *   Success Response: `200 OK` with the updated To-Do object.
+    *   Error Responses: `400 Bad Request` (invalid ID, missing item, validation error, invalid JSON), `404 Not Found`.
+*   **`DELETE /api/todos/:id`**
+    *   Description: Deletes a To-Do item by its ID.
+    *   Success Response: `204 No Content`.
+    *   Error Responses: `400 Bad Request` (invalid ID format), `404 Not Found`.
+
+## Testing the API
+
+A client-side API testing page ("API Explorer") is included with this project to demonstrate the functionality of all endpoints.
+
+1.  Navigate to `/test-api.html` on the deployed application URL (or locally at `http://localhost:3000/test-api.html`).
+2.  The page displays separate, collapsible sections for each API endpoint. Click the header to expand a section.
+3.  For endpoints requiring an ID (`GET /:id`, `PUT /:id`, `DELETE /:id`), enter a valid Todo ID into the corresponding input field.
+4.  For endpoints requiring a request body (`POST`, `PUT`), enter valid JSON into the `<textarea>`. Example JSON is provided as a placeholder.
+5.  Click the "Execute" button within the desired section.
+6.  The HTTP status code and the JSON response body (or an error message, or "(No content)" for DELETE) will be displayed in the "Response" area at the bottom of the page.
 
 ## Future Enhancements (Ideas)
 
-*   Add user input validation (both client-side and server-side).
-*   Implement more robust error handling and display user-friendly error messages.
-*   Add features like marking items as complete.
-*   Consider pagination if the list becomes very long.
-*   Explore user authentication to create separate lists for different users.
+*   Implement more robust server-side input validation (e.g., using a library like Joi or express-validator).
+*   Add client-side validation to the test client (and potentially the HTML forms).
+*   Refine error handling and provide more specific error messages in API responses.
+*   Add features like marking items as complete via the API and HTML interface.
+*   Consider pagination for the `GET /api/todos` endpoint.
+*   Explore user authentication (e.g., JWT) to secure the API and create user-specific data.
+*   Implement API documentation using Swagger/OpenAPI.
 
 ---
-
-This enhanced README provides a much clearer picture of the project, its functionality, and the steps taken during development. Remember to replace placeholders like `https://github.com/gha873/assignment-4-express-routing-mongodb-and-mongoose-new-gha873`, `gha873`, etc., with your actual details.
