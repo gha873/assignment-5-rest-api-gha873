@@ -1,0 +1,30 @@
+{
+  "name": "Assignment #4 - Express Routing, MongoDB, and Mongoose",
+  "version": "1.0.0",
+  "description": "The description of this assignment can be found at [GitHub](https://github.com/gha873/assignment-4-express-routing-mongodb-and-mongoose-new-gha873) (Spring 2024)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gha873/assignment-4-express-routing-mongodb-and-mongoose-new-gha873"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gha873/assignment-4-express-routing-mongodb-and-mongoose-new-gha873/issues"
+  },
+  "homepage": "https://github.com/gha873/assignment-4-express-routing-mongodb-and-mongoose-new-gha873#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.12.1",
+    "pug": "^3.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

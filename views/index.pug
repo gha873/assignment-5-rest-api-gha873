@@ -1,0 +1,31 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/style.css')
+  body
+    .container
+      .about-link
+        a(href="/about") About
+      h1= title
+
+      // Form for adding to-do items
+      form(action="/create" method="POST")
+        label(for="item") Item:
+        input(type="text" id="item" name="item" required)
+        label(for="description") Description:
+        input(type="text" id="description" name="description")
+        button(type="submit") Add Item
+
+      // Display the list of to-dos
+      if todos.length > 0
+        h2 To-Do List
+        ul
+          each todo, index in todos
+            li(class=(newItem && newItem.item === todo.item && newItem.description === todo.description ? 'new-item' : ''))
+              span.todo-item= todo.item + (todo.description ? `: ${todo.description}` : '')
+              span.todo-actions
+                a(href=`/edit/${todo._id}`) Edit
+                a(href=`/delete/${todo._id}`) Delete
+      else
+        p No items in the to-do list yet.

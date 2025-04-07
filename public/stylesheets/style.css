@@ -1,0 +1,146 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
+    margin: 0; /* Remove default body margin */
+    background-color: #f4f4f4; /* Light gray background */
+    color: #333; /* Dark gray text */
+}
+
+.container {
+    max-width: 800px; /* Limit content width for better readability */
+    margin: 20px auto; /* Center the content */
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+h1 {
+    color: #0056b3; /* Darker blue */
+    text-align: center; /* Center the main heading */
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: #0056b3;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    border-bottom: 2px solid #007bff; /* Add a bottom border to section headings */
+    padding-bottom: 0.5em;
+}
+
+.about-link {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1rem;
+}
+
+.about-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.about-link a:hover {
+    text-decoration: underline;
+}
+
+form {
+    margin-bottom: 30px;
+    border: none; /* Remove the border we had before */
+    padding: 0; /* Remove padding */
+    border-radius: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px; /* More space between label and input */
+    font-weight: bold; /* Bold labels */
+}
+
+input[type="text"],
+textarea { /* Added textarea styling */
+    width: 100%;
+    padding: 12px; /* More padding */
+    margin-bottom: 20px;
+    border: 1px solid #ddd; /* Lighter border */
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px; /* Larger font size */
+}
+
+button[type="submit"] {
+    background-color: #007bff; /* Bootstrap primary blue */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease; /* Smooth hover transition */
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+ul {
+    list-style: none; /* Remove default bullet points */
+    padding: 0;
+}
+
+li {
+    background-color: #f9f9f9; /* Very light gray background for list items */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #007bff; /* Blue bar on the left */
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space out content and buttons */
+    align-items: center; /* Vertically center content */
+}
+
+.todo-item {
+    flex-grow: 1; /* Allow item text to take up available space */
+    margin-right: 15px;
+}
+
+.todo-actions a {
+    color: #007bff;
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: 0.9em;
+}
+.todo-actions a:hover {
+     color: red;
+}
+
+.new-item {
+    animation: highlight 1.5s ease; /* Animation for new items */
+}
+
+@keyframes highlight {
+    0% { background-color: #e0ffe0; } /* Start with light green */
+    100% { background-color: #f9f9f9; } /* Fade to normal background */
+}
+
+/* Style for the "Cancel" link in edit.pug */
+.cancel-link {
+    display: inline-block; /* Make the link behave like a button */
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #ccc;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+      font-size: 1rem;
+}
+
+.cancel-link:hover {
+    background-color: #999;
+     color: white;
+}
+
+/* Styling for the about page */
+.about-content {
+  line-height: 1.6;
+}
